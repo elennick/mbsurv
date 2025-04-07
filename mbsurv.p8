@@ -2,6 +2,7 @@ pico-8 cartridge // http://www.pico-8.com
 version 42
 __lua__
 function _init()
+  debug = true
   te = 0 --time elapsed
   sr = 10 --spawn wave size
   tuns = 100 --time until spawn
@@ -10,9 +11,9 @@ function _init()
   p = {}
   p.health = 10
   p.spr = 1
-  p.x = 51
-  p.y = 25
-  p.spd = 1
+  p.x = 512
+  p.y = 256
+  p.spd = 1.25
   p.flip = false
   
   --enemies
@@ -47,8 +48,11 @@ function _draw()
   --draw player
   spr(p.spr, p.x, p.y, 1, 1, p.flip)
 
-		print("tuns:    " .. tuns, 0, 0)
-		print("enemies: " .. #enm, 0, 8)
+  --debug info
+  if debug then
+		  print("wave in: " .. tuns, p.x - 60, p.y - 60)
+		  print("enemies: " .. #enm, p.x - 60, p.y - 52)
+  end
 end
 
 function handle_input()
@@ -90,11 +94,25 @@ function spawn_enemies(sr)
   for i=1,sr do 
     local e = {}
     
-    e.x = flr(rnd(150)) - 75 + p.x
-    e.y = flr(rnd(150)) - 75 + p.y
+    xoffset = (flr(rnd(50)) + 75) * rndplrty()
+    e.x = p.x + xoffset
+    
+    yoffset = flr(rnd(50)) + 75 * rndplrty()
+    e.y = p.y + yoffset
+    
     e.spd = .5
     e.spr = 4
+    
     add(enm, e)
+  end
+end
+
+--generates a random polarity
+function rndplrty()
+  if rnd(1) >= 0.5 then
+    return 1
+  else
+    return -1
   end
 end
 __gfx__
